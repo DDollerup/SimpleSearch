@@ -1,0 +1,67 @@
+﻿@using SimpleSearch.Models;
+@model List<object>
+
+@{
+    ViewBag.Title = "AdvancedSearch";
+}
+
+<h2>AdvancedSearch</h2>
+<form action="/Home/AdvancedSearchSubmit" method="get">
+    <table class="table-bordered">
+        <tr>
+            <td>Indhold:</td>
+        </tr>
+        <tr>
+            <td>
+                <select name="contentID">
+                    <option value="0" selected="selected">
+                        >> Choose Content <<
+                    </option>
+                    <option value="1">
+                        Items
+                    </option>
+                    <option value="2">
+                        Articles
+                    </option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Søgning:</td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="searchQuery" placeholder="Search.." />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Search" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+
+@if (Model.Count > 0)
+{
+    <table class="table-bordered">
+        @foreach (var searchItem in Model)
+        {
+            <tr>
+                <td>
+                    @if (searchItem is Item)
+                    {
+                        Item item = searchItem as Item;
+                        <a href="/Home/ShowItem/@item.ID">@item.Name</a>
+                    }
+                    else if (searchItem is Article)
+                    {
+                        Article article = searchItem as Article;
+                        <a href="/Home/ShowArticle/@article.ID">@article.Title</a>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+}

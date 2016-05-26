@@ -11,6 +11,7 @@ namespace SimpleSearch.Controllers
     public class HomeController : Controller
     {
         ItemFactory itemFac = new ItemFactory();
+        ArticleFactory articleFac = new ArticleFactory();
 
         // GET: Home
         public ActionResult Index()
@@ -71,6 +72,71 @@ namespace SimpleSearch.Controllers
 
 
             return RedirectToAction("ShowAllItems");
+        }
+
+        public ActionResult ShowArticle(int id)
+        {
+            return View(articleFac.Get(id));
+        }
+
+        public ActionResult AdvancedSearch()
+        {
+            if (TempData["AdvancedSearchResult"] == null)
+            {
+                List<object> allSearchableItems = new List<object>();
+                allSearchableItems.AddRange(itemFac.GetAll());
+                allSearchableItems.AddRange(articleFac.GetAll());
+                return View(allSearchableItems);
+            }
+            else
+            {
+                return View((TempData["AdvancedSearchResult"] as List<object>));
+            }
+        }
+
+        public ActionResult AdvancedSearchSubmit()
+        {
+            int contentID = int.Parse(Request.QueryString["contentID"].ToString());
+            string searchQuery = Request.QueryString["searchQuery"].ToString();
+
+            if (searchQuery != null)
+            {
+                searchQuery = searchQuery.Trim();
+            }
+
+            List<object> advancedSearchResult = new List<object>();
+
+            // Hvis contentID < end 1, så skal vi søge i alle tabeller.
+            if (contentID < 1)
+            {
+                List<Item> itemResults = itemFac.GetAll()
+                    .Where(x => x.Name.ToLower().Contains(searchQuery.ToLower()))
+                    .ToList();
+                advancedSearchResult.AddRange(itemResults);
+                List<Article> articlesResults = articleFac.GetAll()
+                    .Where(x => x.Title.ToLower().Contains(searchQuery.ToLower()))
+                    .ToList();
+                advancedSearchResult.AddRange(articlesResults);
+            }
+            else if (contentID == 1) // Hvis contentID er 1, vil det sige at brugeren har valgt at søge på Item
+            {
+                List<Item> itemResults = itemFac.GetAll()
+                    .Where(x => x.Name.ToLower().Contains(searchQuery.ToLower()))
+                    .ToList();
+                advancedSearchResult.AddRange(itemResults);
+            }
+            else if(contentID == 2) // Hvis contentID er 2, vil det sige at brugeren har valgt at søge på Article
+            {
+                List<Article> articlesResults = articleFac.GetAll()
+                    .Where(x => x.Title.ToLower().Contains(searchQuery.ToLower()))
+                    .ToList();
+                advancedSearchResult.AddRange(articlesResults);
+            }
+
+
+            TempData["AdvancedSearchResult"] = advancedSearchResult;
+
+            return RedirectToAction("AdvancedSearch");
         }
     }
 }

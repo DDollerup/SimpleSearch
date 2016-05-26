@@ -1,0 +1,22 @@
+﻿@using SimpleSearch.Models;
+@model Article
+@{
+    ViewBag.Title = "Show Article";
+}
+
+<h2>Show Article</h2>
+
+<div class="col-lg-12">
+    <table class="table">
+        <tr>
+            <td>
+                @Model.Title
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Model.Text
+            </td>
+        </tr>
+    </table>
+</div>
